@@ -6,9 +6,11 @@ class User(Base):
     tg_id = fields.BigIntField(unique=True)
     username = fields.CharField(max_length=100, null=True)
     nickname = fields.CharField(max_length=100, null=True)
+    timezone = fields.CharField(max_length=64, null=False, default="UTC")
 
     class Meta:
         table = "users"
 
     def __str__(self):
-        return f"Пользователь {self.tg_id} ({self.full_user_name})"
+        display_name = self.nickname or self.username or "anonymous"
+        return f"User {self.tg_id} ({display_name})"

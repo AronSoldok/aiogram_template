@@ -35,6 +35,7 @@ class Settings:
     database_models = [
         "database.models.base",
         "database.models.user",
+        "database.models.activity",
     ]
 
     TORTOISE_ORM = {

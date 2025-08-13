@@ -33,11 +33,20 @@ async def set_bot_commands(bot: Bot):
     await bot.set_my_commands(commands)
     logger.info("Команды бота установлены")
 
+async def include_routers():
+    from handlers.user.start_user import user_router
+    from handlers.user.calendar import calendar_router
+    settings.dp.include_router(user_router)
+    settings.dp.include_router(calendar_router)
+
 async def main():
     """Основная функция запуска бота"""
     try:        
         # Инициализация базы данных
         await init_db()
+        
+        # Подключение роутеров
+        await include_routers()
         
         # Настройка команд бота
         await set_bot_commands(settings.bot)
