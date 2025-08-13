@@ -36,6 +36,7 @@ class Settings:
         "database.models.base",
         "database.models.user",
         "database.models.activity",
+        "database.models.user_stats",
     ]
 
     TORTOISE_ORM = {

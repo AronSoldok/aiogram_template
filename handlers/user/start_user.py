@@ -5,7 +5,7 @@ from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
 
-from services.activity_service import get_or_create_user, get_month_statuses, compute_streaks, summary
+from services.activity_service import get_or_create_user, get_month_statuses, compute_streaks, summary, mark_today_done, top_users_by_streak, get_or_create_user_stats
 from keyboards.user.start_user_keyboards import main_menu_kb
 from keyboards.user.calendar import build_calendar
 from supportiv_function.base import SupportiveFunctions
@@ -32,6 +32,7 @@ async def start_cmd(msg: Message):
 		username=msg.from_user.username,
 		nickname=(msg.from_user.full_name or msg.from_user.first_name),
 	)
+	await get_or_create_user_stats(user.id)
 	await msg.answer(
 		text=(
 			"Привет! Это трекер прогресса.\n\n"
@@ -53,6 +54,33 @@ async def back_to_home(cb: CallbackQuery):
 		),
 		reply_markup=main_menu_kb(),
 	)
+	await cb.answer()
+
+
+@user_router.callback_query(F.data == "menu:mark_today")
+async def quick_mark_today(cb: CallbackQuery):
+	await mark_today_done(cb.from_user.id)
+	await cb.answer("Сегодня отмечено ✅")
+
+
+@user_router.callback_query(F.data == "menu:top")
+async def show_top(cb: CallbackQuery):
+	stats = await top_users_by_streak(10)
+	if not stats:
+		text = "Пока нет данных для рейтинга"
+	else:
+		lines = []
+		rank = 1
+		for s in stats:
+			try:
+				user = await s.user
+				name = user.nickname or user.username or str(user.tg_id)
+			except Exception:
+				name = str(s.user_id)
+			lines.append(f"{rank}. {name} — стрик: {s.current_streak}, max: {s.max_streak}, ✅ {s.total_done}")
+			rank += 1
+		text = "<b>Топ 10 по стрику</b>\n\n" + "\n".join(lines)
+	await SupportiveFunctions.try_edit(cb, text=text, reply_markup=main_menu_kb())
 	await cb.answer()
 
 

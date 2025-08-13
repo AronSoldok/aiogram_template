@@ -29,6 +29,7 @@ async def set_bot_commands(bot: Bot):
     """Устанавливает команды бота для отображения в меню автодополнения"""
     commands = [
         BotCommand(command="start", description="Запустить бота"),
+        BotCommand(command="register", description="Регистрация"),
     ]
     await bot.set_my_commands(commands)
     logger.info("Команды бота установлены")
@@ -36,8 +37,10 @@ async def set_bot_commands(bot: Bot):
 async def include_routers():
     from handlers.user.start_user import user_router
     from handlers.user.calendar import calendar_router
+    from handlers.user.registration import registration_router
     settings.dp.include_router(user_router)
     settings.dp.include_router(calendar_router)
+    settings.dp.include_router(registration_router)
 
 async def main():
     """Основная функция запуска бота"""
