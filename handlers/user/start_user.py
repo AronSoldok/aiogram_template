@@ -71,15 +71,21 @@ async def show_top(cb: CallbackQuery):
 	else:
 		lines = []
 		rank = 1
+		user_place = None
 		for s in stats:
 			try:
 				user = await s.user
 				name = user.nickname or user.username or str(user.tg_id)
 			except Exception:
 				name = str(s.user_id)
+			if user and user.tg_id == cb.from_user.id:
+				user_place = rank
 			lines.append(f"{rank}. {name} — стрик: {s.current_streak}, max: {s.max_streak}, ✅ {s.total_done}")
 			rank += 1
-		text = "<b>Топ 10 по стрику</b>\n\n" + "\n".join(lines)
+		header = "<b>Топ 10 по стрику</b>"
+		if user_place:
+			header += f"\nВаше место: <b>{user_place}</b>"
+		text = header + "\n\n" + "\n".join(lines)
 	await SupportiveFunctions.try_edit(cb, text=text, reply_markup=main_menu_kb())
 	await cb.answer()
 

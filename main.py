@@ -38,6 +38,9 @@ async def include_routers():
     from handlers.user.start_user import user_router
     from handlers.user.calendar import calendar_router
     from handlers.user.registration import registration_router
+    from middlewares.registration import RegistrationRequiredMiddleware
+    # Middleware на верхнем уровне
+    settings.dp.update.middleware(RegistrationRequiredMiddleware())
     settings.dp.include_router(user_router)
     settings.dp.include_router(calendar_router)
     settings.dp.include_router(registration_router)
@@ -48,7 +51,7 @@ async def main():
         # Инициализация базы данных
         await init_db()
         
-        # Подключение роутеров
+        # Подключение роутеров и middleware
         await include_routers()
         
         # Настройка команд бота

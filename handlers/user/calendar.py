@@ -4,7 +4,7 @@ from calendar import monthrange
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
 
-from services.activity_service import get_month_statuses, cycle_day_status, compute_streaks, summary, get_or_create_user
+from services.activity_service import get_month_statuses, cycle_day_status, compute_streaks, summary, get_or_create_user, set_day_status
 from keyboards.user.calendar import build_calendar
 from supportiv_function.base import SupportiveFunctions
 
@@ -35,6 +35,7 @@ async def handle_calendar(cb: CallbackQuery):
     )
 
     today = date.today()
+    answered = False
 
     if action == "noop":
         await cb.answer()
@@ -46,6 +47,11 @@ async def handle_calendar(cb: CallbackQuery):
         year, month = _move_month(int(y), int(m), -1)
     elif action == "nav_next":
         year, month = _move_month(int(y), int(m), +1)
+    elif action == "reset_today":
+        year, month = today.year, today.month
+        await set_day_status(cb.from_user.id, today, 0)
+        await cb.answer("Сегодня сброшено в ◻️")
+        answered = True
     else:
         year, month = int(y), int(m)
 
@@ -55,6 +61,7 @@ async def handle_calendar(cb: CallbackQuery):
         target_date = date(year, month, day)
         if target_date > today:
             await cb.answer("Нельзя отмечать будущие даты", show_alert=False)
+            answered = True
         else:
             await cycle_day_status(cb.from_user.id, target_date)
 
@@ -78,4 +85,5 @@ async def handle_calendar(cb: CallbackQuery):
     )
 
     await SupportiveFunctions.try_edit(cb, text=text, reply_markup=kb)
-    await cb.answer() 
+    if not answered:
+        await cb.answer() 
