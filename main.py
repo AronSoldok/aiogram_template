@@ -1,16 +1,14 @@
 import asyncio
-import logging
 from aiogram import Bot
 from aiogram.types import BotCommand
 from tortoise import Tortoise
 
 from config import settings
-# Настройка логирования
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+from supportiv_function.logger import get_logger, init_logging
+
+# Инициализируем систему логирования при старте приложения
+init_logging()
+logger = get_logger(__name__)
 
 
 async def init_db():

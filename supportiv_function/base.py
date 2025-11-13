@@ -3,7 +3,9 @@ from aiogram import types
 from aiogram.enums import ContentType
 from aiogram.exceptions import TelegramRetryAfter, TelegramBadRequest
 from aiogram.types import InputMediaPhoto
-import logging
+from supportiv_function.logger import get_logger
+
+logger = get_logger(__name__)
 
 class SupportiveFunctions:
     @classmethod
@@ -101,7 +103,6 @@ class SupportiveFunctions:
         except TelegramBadRequest as e:
             # Игнорируем ошибку Telegram "message is not modified" – пользователь повторно нажал кнопку
             if "message is not modified" in str(e):
-                logger = logging.getLogger(__name__)
                 logger.debug("Сообщение уже содержит актуальный текст/клавиатуру, пропускаем редактирование")
                 return None
             raise

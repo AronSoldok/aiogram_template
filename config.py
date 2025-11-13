@@ -24,6 +24,7 @@ class Settings:
     POSTGRES_DB: str = str(getenv("POSTGRES_DB"))
     POSTGRES_USER: str = str(getenv("POSTGRES_USER"))
     POSTGRES_PASSWORD: str = str(getenv("POSTGRES_PASSWORD"))
+    ENABLE_LOGGING: bool = getenv("ENABLE_LOGGING", "True").lower() in ("true", "1", "yes")
 
     bot = Bot(
         token=BOT_TOKEN, 
